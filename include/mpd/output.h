@@ -81,6 +81,14 @@ mpd_pure
 const char *
 mpd_output_get_plugin(const struct mpd_output *output);
 
+mpd_pure
+unsigned
+mpd_output_get_sample_rate(const struct mpd_output *output);
+
+mpd_pure
+unsigned
+mpd_output_get_bits_per_sample(const struct mpd_output *output);
+
 /**
  * @return true if this output is enabled
  */

@@ -7,6 +7,7 @@
 #include <mpd/search.h>
 #include <mpd/tag.h>
 #include <mpd/message.h>
+#include <mpd/output.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -173,6 +174,16 @@ int main(int argc, char ** argv) {
 		if (mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS ||
 		    !mpd_response_finish(conn))
 			return handle_error(conn);
+	} else if (argc == 2 && strcmp(argv[1], "outputs") == 0) {
+          mpd_send_outputs(conn);
+          struct mpd_output* o;
+          while ((o = mpd_recv_output(conn)) != NULL) {
+            printf("%d - %s %d/%d\n",
+                   mpd_output_get_id(o),
+                   mpd_output_get_name(o),
+                   mpd_output_get_sample_rate(o),
+                   mpd_output_get_bits_per_sample(o));
+          }
 	}
 	else if(argc==3 && strcmp(argv[1],"lsinfo")==0) {
 		struct mpd_entity * entity;

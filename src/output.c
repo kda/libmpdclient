@@ -17,6 +17,8 @@ struct mpd_output {
 	struct mpd_kvlist attributes;
 
 	bool enabled;
+  unsigned sample_rate;
+  unsigned bits_per_sample;
 };
 
 struct mpd_output *
@@ -39,6 +41,8 @@ mpd_output_begin(const struct mpd_pair *pair)
 	output->plugin = NULL;
 	mpd_kvlist_init(&output->attributes);
 	output->enabled = false;
+	output->sample_rate = 0;
+	output->bits_per_sample = 0;
 
 	return output;
 }
@@ -46,15 +50,16 @@ mpd_output_begin(const struct mpd_pair *pair)
 bool
 mpd_output_feed(struct mpd_output *output, const struct mpd_pair *pair)
 {
+        //fprintf(stderr, "name: %s value: %s\n", pair->name, pair->value);
 	if (strcmp(pair->name, "outputid") == 0)
 		return false;
 
 	if (strcmp(pair->name, "outputname") == 0) {
 		free(output->name);
 		output->name = strdup(pair->value);
-	} else if (strcmp(pair->name, "outputenabled") == 0)
+	} else if (strcmp(pair->name, "outputenabled") == 0) {
 		output->enabled = atoi(pair->value) != 0;
-	else if (strcmp(pair->name, "plugin") == 0) {
+  } else if (strcmp(pair->name, "plugin") == 0) {
 		free(output->plugin);
 		output->plugin = strdup(pair->value);
 	} else if (strcmp(pair->name, "attribute") == 0) {
@@ -63,7 +68,12 @@ mpd_output_feed(struct mpd_output *output, const struct mpd_pair *pair)
 			mpd_kvlist_add(&output->attributes,
 				       pair->value, eq - pair->value,
 				       eq + 1);
-	}
+  } else if (strcmp(pair->name, "sample_rate") == 0) {
+    output->sample_rate = atoi(pair->value);
+  } else if (strcmp(pair->name, "bits_per_sample") == 0) {
+    output->bits_per_sample = atoi(pair->value);
+  }
+
 
 	return true;
 }
@@ -133,4 +143,18 @@ mpd_output_next_attribute(struct mpd_output *output)
 	assert(output != NULL);
 
 	return mpd_kvlist_next(&output->attributes);
+}
+
+unsigned
+mpd_output_get_sample_rate(const struct mpd_output *output)
+{
+  assert(output != NULL);
+  return output->sample_rate;
+}
+
+unsigned
+mpd_output_get_bits_per_sample(const struct mpd_output *output)
+{
+  assert(output != NULL);
+  return output->bits_per_sample;
 }

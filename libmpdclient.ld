@@ -168,6 +168,8 @@ global:
 	mpd_output_get_attribute;
 	mpd_output_first_attribute;
 	mpd_output_next_attribute;
+	mpd_output_get_sample_rate;
+	mpd_output_get_bits_per_sample;
 	mpd_send_outputs;
 	mpd_recv_output;
 	mpd_send_enable_output;
